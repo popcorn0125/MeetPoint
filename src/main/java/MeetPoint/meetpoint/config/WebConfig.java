@@ -17,6 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("*")
+                .allowCredentials(true); // 쿠키 허용
                 .allowedMethods("GET", "POST");
     }
 
