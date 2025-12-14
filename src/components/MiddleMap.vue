@@ -110,21 +110,23 @@ export default {
     name: "MiddleMap",
     data() {
         return {
-            modal_btn_name: "닫기", // 재탐색 모달창 생성시 나타나는 버튼명
-            modalOpen: false, // 모달 창 해제
-            userMarkers : [], // 사용자 위치 마커들 저장
-            markers: [], // 카테고리 마커들 저장
-            userData: [], // 사용자들 이름, 주소 데이터
-            userexist: [], // 사용자 세션에 들어갈 데이터
-            mpLatitude: "", // 중간좌표 위도
-            mpLongitude: "", // 중간좌표 경도
-            mpName: "", // 재탐색을 통해 주소 이름 저장
-            address_name: { // 중간 지점 주소 저장 변수 
-                depth1_name: "", // ex : 경상남도
-                depth2_name: "", // ex : 경산시
+            modal_btn_name: "닫기",  // 재탐색 모달창 생성시 나타나는 버튼명
+            modalOpen: false,       // 모달 창 해제
+            userMarkers : [],       // 사용자 위치 마커들 저장
+            markers: [],            // 카테고리 마커들 저장
+            userData: [],           // 사용자들 이름, 주소 데이터
+            userexist: [],          // 사용자 세션에 들어갈 데이터
+            mpLatitude: "",         // 중간좌표 위도
+            mpLongitude: "",        // 중간좌표 경도
+            mpName: "",             // 재탐색을 통해 주소 이름 저장
+            address_name: {         // 중간 지점 주소 저장 변수 
+                depth1_name: "",    // ex : 경상남도
+                depth2_name: "",    // ex : 경산시
             },
-            options: [], // 관광지 등 어떤 장소를 기준으로 새로운 중간지점을 선택할지 카테고리를 저장
-            address_options: [], // 시도, 시군구를 선택했을 경우 저장할 배열
+            options: [],            // 관광지 등 어떤 장소를 기준으로 새로운 중간지점을 선택할지 카테고리를 저장
+            address_options: [],    // 시도, 시군구를 선택했을 경우 저장할 배열
+
+            mid_marker_info : "",   // 중간 지점 마커 정보 (사용이유 : 재탐색을 했을 시 기존에 지정된 마커를 제거하기 위해 사용)
 
             category_click: {
                 food: false,
@@ -147,8 +149,8 @@ export default {
                 { id: "OL7", name: "주유소" },
                 { id: "SW8", name: "지하철역" },
             ],
-            check_space: [], //체크된 장소
-            addrName: "", // ListPage로 전달할 주소명
+            check_space: [],      //체크된 장소
+            addrName: "",         // ListPage로 전달할 주소명
             addrBuildingName: "", // ListPage로 전달할 건물명
         };
     },
@@ -161,7 +163,9 @@ export default {
             };
             //지도 객체를 등록합니다.
             //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
-            this.map = new kakao.maps.Map(container, options);
+            if(this.map == null) {
+                this.map = new kakao.maps.Map(container, options);
+            }
 
             // 사용자 위치 표시
             this.showUsersPosition()
@@ -179,6 +183,7 @@ export default {
                 position: markerPosition,
                 image: markerImage,
             });
+            this.mid_marker_info = marker;
 
             //인포윈도우 열림 여부 확인 변수
             let infowindowOpened = false;
@@ -450,15 +455,16 @@ export default {
             })
                 .then((response) => {
                     if (response.data != "") {
-                        this.mpLatitude = response.data.latitude; // 새로운 위도
+                        this.mpLatitude = response.data.latitude;   // 새로운 위도
                         this.mpLongitude = response.data.longitude; // 새로운 경도
-                        this.mpName = response.data.name; // 새로운 주소 이름
-                        this.userMarkers = []; // 사용자 위치 마커들 초기화
-                        this.userData = []; // 사용자들 이름, 주소 데이터 초기화
-                        this.initMap(); // 새로운 중간 장소 생성
-                        this.options = []; // 재탐색 옵션 선택한 것 초기화
-                        this.address_options = []; // 재탐색 옵션에 지역선택한 것 초기화
-                        this.modalOpen = false; // 모달창 닫기
+                        this.mpName = response.data.name;           // 새로운 주소 이름
+                        this.userMarkers = [];                      // 사용자 위치 마커들 초기화
+                        this.userData = [];                         // 사용자들 이름, 주소 데이터 초기화
+                        this.mid_marker_info.setMap(null);          // 기존에 찍힌 중간 지점 좌표 마커를 지도에서 지움
+                        this.initMap();                             // 새로운 중간 장소 생성
+                        this.options = [];                          // 재탐색 옵션 선택한 것 초기화
+                        this.address_options = [];                  // 재탐색 옵션에 지역선택한 것 초기화
+                        this.modalOpen = false;                     // 모달창 닫기
                     }
                     else {
                         alert("해당 지역에 선택하신 옵션의 장소가 없습니다. \n다른 옵션을 선택하여 주세요.");
