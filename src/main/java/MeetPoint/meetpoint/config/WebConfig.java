@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
+                .allowedOrigins("https://web-meetpoint-frontend-1272llwvu36eh.sel5.cloudtype.app")
                 .allowedMethods("GET", "POST");
     }
 
