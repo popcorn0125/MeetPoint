@@ -143,19 +143,12 @@ public class MapService {
     public void deleteCookie(HttpServletResponse response, HttpServletRequest request){
         try{
             Cookie[] cookies = request.getCookies();
-            if(cookies != null){
-                // 현재 요청의 서버 도메인을 가져옴.
-                String domain = request.getServerName();
-                
+            if(cookies != null){ 
                 for(Cookie cookie : cookies){
                     if(cookie.getName().contains("USER")){
                         // 쿠키에 사용자정보가 있을 경우
                         cookie.setMaxAge(0);
                         cookie.setPath("/");
-                        // 안전을 위해, 로컬 환경이 아닐 경우 도메인을 설정하도록 조건을 넣는 것이 좋음.
-                        if (!domain.equalsIgnoreCase("localhost")) {
-                            cookie.setDomain(domain); 
-                        }
                         response.addCookie(cookie);
                     }
                 }
