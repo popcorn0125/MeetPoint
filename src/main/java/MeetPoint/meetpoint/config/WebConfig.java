@@ -15,9 +15,10 @@ public class WebConfig implements WebMvcConfigurer {
      * *****************/
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("https://web-meetpoint-frontend-1272llwvu36eh.sel5.cloudtype.app")
-                .allowedMethods("GET", "POST");
+        registry.addMapping("/**")   // 모든 경로에 대해 CORS 설정을 적용
+                .allowedOrigins("*")            // 모든 오리진(출처)에서의 요청을 허용
+                .allowedHeaders("*")            // 모든 헤더를 허용
+                .allowedMethods("GET", "POST"); // 허용되는 HTTP 메서드를 지정(GET, POST)
     }
 
     /*******************
