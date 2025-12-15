@@ -104,8 +104,7 @@
     </div>
 </template>
 <script>
-import axios from 'axios';
-import baseURL from '@/url/baseURL';
+import api from '@/url/baseURL';
 
 export default {
     name: "MiddleMap",
@@ -448,11 +447,9 @@ export default {
                 reSearch_data.region_1depth_name = this.address_name.depth1_name;
             }
 
-            axios({
+            api({
                 method: 'post',
-                header: { 'Content-Type': 'application/json; charset=UTF-8' },
-                url: `${baseURL}/reSearchPoint`,
-                // url: "/map/reSearchPoint",
+                url: "/map/reSearchPoint",
                 data: reSearch_data,
             })
                 .then((response) => {

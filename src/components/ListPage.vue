@@ -102,7 +102,7 @@
 <script>
 import axios from 'axios';
 import { reactive } from 'vue';
-import baseURL from '@/url/baseURL';
+import api from '@/url/baseURL';
 
 export default {
     name: "ListPage",
@@ -169,11 +169,9 @@ export default {
                 stayTimeHour: this.selectedStayTime.hour,
                 stayTimeMinute: this.selectedStayTime.minute,
             }
-            axios({
+            api({
                 method: 'post',
-                header: { 'Content-Type': 'application/json; charset=UTF-8' },
-                url: `${baseURL}/storePlace`,
-                // url: "/choice/storePlace",
+                url: "/choice/storePlace",
                 data: data,
             })
                 .then((response) => {
@@ -544,9 +542,7 @@ export default {
 
             axios({
                 method: 'post',
-                header: { 'Content-Type': 'application/json; charset=UTF-8' },
-                url: `${baseURL}/selectPlace`,
-                // url: "/choice/selectPlace",
+                url: "/choice/selectPlace",
                 data: { "index": index },
             })
                 .then((response) => {

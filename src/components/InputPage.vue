@@ -78,8 +78,7 @@
     </div>
 </template>
 <script>
-import axios from 'axios';
-import baseURL from '@/url/baseURL';
+import api from '@/url/baseURL';
 
 export default {
     name: 'InputPage',
@@ -198,11 +197,9 @@ export default {
                 return;
             }
             const dt = [vm.calMode, vm.friendList];
-            axios({
+            api({
                 method: 'post',
-                header: { 'Content-Type': 'application/json; charset=UTF-8' },
-                url: `${baseURL}/map/mainPage`,
-                // url: "/map/mainPage",
+                url: "/map/mainPage",
                 data: dt,
             })
                 .then(function(response){
