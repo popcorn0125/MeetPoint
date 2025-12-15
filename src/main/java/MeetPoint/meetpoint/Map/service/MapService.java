@@ -124,11 +124,17 @@ public class MapService {
      **/
     public void createCookie(HttpServletResponse response, String cookieName, String cookieValue) { // 크키를 생성할 때 쿠키값은 인코딩하여 생성 (만약 인코딩이 지원되지 않는 경우 예외 발생)
         try{
-            String urlEncodedCookieValue = URLEncoder.encode(cookieValue, StandardCharsets.UTF_8); // 쿠키값을 url 인코딩하여 저장
-            Cookie cookie = new Cookie(cookieName, urlEncodedCookieValue);
-            cookie.setMaxAge(24*60*60); // 쿠키 수명 24시간 (시간*분*초)
-            cookie.setPath("/");
-            response.addCookie(cookie);
+            // String urlEncodedCookieValue = URLEncoder.encode(cookieValue, StandardCharsets.UTF_8); // 쿠키값을 url 인코딩하여 저장
+            // Cookie cookie = new Cookie(cookieName, urlEncodedCookieValue);
+            // cookie.setMaxAge(24*60*60); // 쿠키 수명 24시간 (시간*분*초)
+            // cookie.setPath("/");
+            // response.addCookie(cookie);
+            // HTTPS 환경으로 전환 후 사용 (Secure 필수)
+            String cookieHeader = String.format("%s=%s; Max-Age=%d; Path=/; SameSite=None; Secure; HttpOnly", 
+                                                cookieName, 
+                                                urlEncodedCookieValue, 
+                                                24*60*60);
+            response.addHeader("Set-Cookie", cookieHeader);            
         } catch (Exception e) {
             e.printStackTrace();
         }
