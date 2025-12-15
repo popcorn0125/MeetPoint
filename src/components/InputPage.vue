@@ -201,7 +201,7 @@ export default {
             axios({
                 method: 'post',
                 header: { 'Content-Type': 'application/json; charset=UTF-8' },
-                url: `${baseURL}/mainPage`,
+                url: `${baseURL}/map/mainPage`,
                 // url: "/map/mainPage",
                 data: dt,
             })
