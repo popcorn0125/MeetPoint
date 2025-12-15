@@ -79,6 +79,8 @@
 </template>
 <script>
 import axios from 'axios';
+import baseURL from '@/url/baseURL';
+
 export default {
     name: 'InputPage',
     data() {
@@ -199,7 +201,8 @@ export default {
             axios({
                 method: 'post',
                 header: { 'Content-Type': 'application/json; charset=UTF-8' },
-                url: "/map/mainPage",
+                url: `${baseURL}/mainPage`,
+                // url: "/map/mainPage",
                 data: dt,
             })
                 .then(function(response){

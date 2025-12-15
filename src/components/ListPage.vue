@@ -102,6 +102,7 @@
 <script>
 import axios from 'axios';
 import { reactive } from 'vue';
+import baseURL from '@/url/baseURL';
 
 export default {
     name: "ListPage",
@@ -171,7 +172,8 @@ export default {
             axios({
                 method: 'post',
                 header: { 'Content-Type': 'application/json; charset=UTF-8' },
-                url: "/choice/storePlace",
+                url: `${baseURL}/storePlace`,
+                // url: "/choice/storePlace",
                 data: data,
             })
                 .then((response) => {
@@ -543,7 +545,8 @@ export default {
             axios({
                 method: 'post',
                 header: { 'Content-Type': 'application/json; charset=UTF-8' },
-                url: "/choice/selectPlace",
+                url: `${baseURL}/selectPlace`,
+                // url: "/choice/selectPlace",
                 data: { "index": index },
             })
                 .then((response) => {

@@ -105,6 +105,7 @@
 </template>
 <script>
 import axios from 'axios';
+import baseURL from '@/url/baseURL';
 
 export default {
     name: "MiddleMap",
@@ -450,7 +451,8 @@ export default {
             axios({
                 method: 'post',
                 header: { 'Content-Type': 'application/json; charset=UTF-8' },
-                url: "/map/reSearchPoint",
+                url: `${baseURL}/reSearchPoint`,
+                // url: "/map/reSearchPoint",
                 data: reSearch_data,
             })
                 .then((response) => {
