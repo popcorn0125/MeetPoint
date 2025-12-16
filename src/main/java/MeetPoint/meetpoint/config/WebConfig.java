@@ -11,6 +11,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${front_end_url}")
     private String url;
 
+    @Value("${dev_server}")
+    private String devServer;
+
     /*******************
      * 날짜 : 2024.04.02
      * 이름 : 김준식
@@ -18,11 +21,11 @@ public class WebConfig implements WebMvcConfigurer {
      * *****************/
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")   // 모든 경로에 대해 CORS 설정을 적용
-                .allowedOrigins(url, "localhost:1024")            // 모든 오리진(출처)에서의 요청을 허용
+        registry.addMapping("/**")                // 모든 경로에 대해 CORS 설정을 적용
+                .allowedOrigins(url,devServer)    // 모든 오리진(출처)에서의 요청을 허용
 //                .allowedHeaders("*")            // 모든 헤더를 허용
                 .allowCredentials(true)
-                .allowedMethods("GET", "POST"); // 허용되는 HTTP 메서드를 지정(GET, POST)
+                .allowedMethods("GET", "POST");   // 허용되는 HTTP 메서드를 지정(GET, POST)
     }
 
     /*******************
