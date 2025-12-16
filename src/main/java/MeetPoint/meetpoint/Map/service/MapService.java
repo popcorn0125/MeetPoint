@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 
@@ -125,10 +126,16 @@ public class MapService {
     public void createCookie(HttpServletResponse response, String cookieName, String cookieValue) { // 크키를 생성할 때 쿠키값은 인코딩하여 생성 (만약 인코딩이 지원되지 않는 경우 예외 발생)
         try{
             String urlEncodedCookieValue = URLEncoder.encode(cookieValue, StandardCharsets.UTF_8); // 쿠키값을 url 인코딩하여 저장
-            Cookie cookie = new Cookie(cookieName, urlEncodedCookieValue);
-            cookie.setMaxAge(24*60*60); // 쿠키 수명 24시간 (시간*분*초)
-            cookie.setPath("/");
-            response.addCookie(cookie);
+
+            ResponseCookie cookie = ResponseCookie.from(cookieName, urlEncodedCookieValue)
+                    .path("/")
+                    .maxAge(24 * 60 * 60)
+                    .sameSite("None")
+                    .secure(true)
+                    // .httpOnly(true) // 필요하면 추가
+                    .build();
+
+            response.addHeader("Set-Cookie", cookie.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
