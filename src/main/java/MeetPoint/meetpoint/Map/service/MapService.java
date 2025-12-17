@@ -105,15 +105,15 @@ public class MapService {
             }
         }
 
-        // 쿠키를 저장하기 전 기존에 쿠키가 존재하면 삭제
-        deleteCookie(response, request);
-
-        // 이름 및 위치 데이터 저장 및 쿠키에 저장
-        int usersLength = users.size();
-        for(int i = 1; i <= usersLength; i++){
-            String cookieName = "USER" + i; // 쿠키 이름을 사용자1, 사용자2, 사용자3, 사용자4 식으로 저장.
-            createCookie(response, cookieName, users.get(i-1)); // 쿠키 생성
-        }
+//        // 쿠키를 저장하기 전 기존에 쿠키가 존재하면 삭제
+//        deleteCookie(response, request);
+//
+//        // 이름 및 위치 데이터 저장 및 쿠키에 저장
+//        int usersLength = users.size();
+//        for(int i = 1; i <= usersLength; i++){
+//            String cookieName = "USER" + i; // 쿠키 이름을 사용자1, 사용자2, 사용자3, 사용자4 식으로 저장.
+//            createCookie(response, cookieName, users.get(i-1)); // 쿠키 생성
+//        }
 
         return result;
     }
