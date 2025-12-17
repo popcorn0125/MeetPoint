@@ -297,18 +297,33 @@ export default {
         // 사용자 위치 표시
         showUsersPosition() {
             const vm = this;
-            var cookies = document.cookie.split(";"); // 쿠키를 불러와서 ;(세미콜론)을 기준으로 분할
-            // var count = 1; // USER 뒤에 붙는 수
-            // 쿠키를 순회하여 USER 쿠키에 저장된 값을 불러옴
-            for (var i = 0; i < cookies.length; i++) { // 쿠키 순회하면서 원하는 쿠키 찾기(USER1 USER2 등)
-                var cookie = cookies[i].trim();
-                cookie = cookie.split("=");
-                if (cookie[0].includes('USER')) {
-                    vm.decode(cookie[1]);
-                }
+            const userCount = JSON.parse(sessionStorage.getItem('USER_COUNT'));
+            let input_user_list = '';
+
+            for(let i = 1; i <= userCount; i++) {
+                input_user_list = JSON.parse(sessionStorage.getItem('USER' + i));
+                vm.userData.push({
+                    name: input_user_list.name,
+                    address: input_user_list.address,
+                    address_name: input_user_list.position.address_name,
+                    latlng: new window.kakao.maps.LatLng(parseFloat(input_user_list.position.y), parseFloat(input_user_list.position.x)),
+                })
             }
 
-            // 쿠키에서 추출한 값을 통해 사용자들 위치 마커 생성
+            // var cookies = document.cookie.split(";"); // 쿠키를 불러와서 ;(세미콜론)을 기준으로 분할
+            // console.log('cookies', cookies);
+            // // var count = 1; // USER 뒤에 붙는 수
+            // // 쿠키를 순회하여 USER 쿠키에 저장된 값을 불러옴
+            // for (var i = 0; i < cookies.length; i++) { // 쿠키 순회하면서 원하는 쿠키 찾기(USER1 USER2 등)
+            //     var cookie = cookies[i].trim();
+            //     cookie = cookie.split("=");
+            //     console.log('cookie ' + i, cookie);
+            //     if (cookie[0].includes('USER')) {
+            //         vm.decode(cookie[1]);
+            //     }
+            // }
+
+            // 세션스토리지에서 추출한 값을 통해 사용자들 위치 마커 생성
             for (let i = 0; i < vm.userData.length; i++) {
                 (function (i) {
                     let rand0_5 = 0

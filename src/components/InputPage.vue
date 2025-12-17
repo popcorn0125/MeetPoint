@@ -187,6 +187,7 @@ export default {
         // ListPage로 이동
         moveListPage() {
             const vm = this;
+            sessionStorage.clear();
 
             if(vm.friendList.length == 0) {
                 alert("친구 추가하기를 통해 위치를 등록 해주세요.");
@@ -197,6 +198,12 @@ export default {
                 return;
             }
             const dt = [vm.calMode, vm.friendList];
+            sessionStorage.setItem('USER_COUNT', vm.friendList.length);
+
+            for(var i = 1; i <= vm.friendList.length; i++) {
+                sessionStorage.setItem('USER' + i, JSON.stringify(vm.friendList[i - 1]));
+            }
+
             api({
                 method: 'post',
                 url: "/map/mainPage",
@@ -204,7 +211,7 @@ export default {
             })
                 .then(function(response){
                     // alert("중심 좌표 \n\n" + '위도 :' + response.data.latitude + '\n\n경도 : ' + response.data.longitude);
-                    vm.$router.push({path: '/MiddleMap.page', query:{"mpLatitude": response.data.latitude, "mpLongitude": response.data.longitude }},)
+                    vm.$router.push({path: '/MiddleMap.page', query:{"mpLatitude": response.data.latitude, "mpLongitude": response.data.longitude}},)
                 })
                 .catch(function(){
                     alert("좌표를 불러오는데 실패하였습니다.");
