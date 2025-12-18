@@ -152,6 +152,8 @@ export default {
             check_space: [],      //체크된 장소
             addrName: "",         // ListPage로 전달할 주소명
             addrBuildingName: "", // ListPage로 전달할 건물명
+
+            isResearch : null,    // 재탐색 여부 (사용자의 위치 마커 중복 생성 방지)
         };
     },
     methods: {
@@ -167,9 +169,11 @@ export default {
                 this.map = new kakao.maps.Map(container, options);
             }
 
-            // 사용자 위치 표시
-            this.showUsersPosition()
-
+            // 사용자 위치 표시 (재탐색을 이용할 경우 기존 사용자들 위치를 중복생성 하여 마커로 표시하지 않기 위함)
+            if(!this.isResearch) {
+                this.showUsersPosition()
+            }
+            
             // 좌표를 주소로 반환
             this.addressInfo();
 
@@ -469,11 +473,10 @@ export default {
             })
                 .then((response) => {
                     if (response.data != "") {
+                        this.isResearch = true;
                         this.mpLatitude = response.data.latitude;   // 새로운 위도
                         this.mpLongitude = response.data.longitude; // 새로운 경도
                         this.mpName = response.data.name;           // 새로운 주소 이름
-                        this.userMarkers = [];                      // 사용자 위치 마커들 초기화
-                        this.userData = [];                         // 사용자들 이름, 주소 데이터 초기화
                         this.mid_marker_info.setMap(null);          // 기존에 찍힌 중간 지점 좌표 마커를 지도에서 지움
                         this.initMap();                             // 새로운 중간 장소 생성
                         this.options = [];                          // 재탐색 옵션 선택한 것 초기화
@@ -721,6 +724,7 @@ export default {
         if (JSON.parse(sessionStorage.getItem('markerImageName')) != null || JSON.parse(sessionStorage.getItem('markerImageName')) != undefined){
             this.userexist = JSON.parse(sessionStorage.getItem('markerImageName'));
         }
+        this.isResearch = false;
         this.mpLatitude = this.$route.query.mpLatitude; // 첫 번째페이지에서 라우터로 전달해준 위도값
         this.mpLongitude = this.$route.query.mpLongitude; // 첫 번째 페이지에서 라우터로 전달해준 경도값
         if (window.kakao && window.kakao.maps) {
