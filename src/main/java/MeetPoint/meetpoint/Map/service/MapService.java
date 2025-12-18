@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-
+import org.springframework.util.StopWatch;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +30,8 @@ public class MapService {
      * 내용 : 중간지점 좌표 계산 Service
      **/
     public HashMap<String, Object> findCenterPoint(List<Object> params, HttpServletResponse response, HttpServletRequest request) {
-
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("init");
         // 중간지점 계산 방식 옵션 저장 (1)거리순 (2)무게중심 (3)교통점수
         Integer option = (Integer) params.get(0);
 
@@ -40,18 +41,18 @@ public class MapService {
         List<Double> lon = new ArrayList<>(); // 경도
 
         // 쿠키에 저장할 여러 사용자의 이름, 주소를 리스트로 저장
-        List<String> users = new ArrayList<>();
+//        List<String> users = new ArrayList<>();
 
         for(HashMap<String, Object> res : re) {
             HashMap<String, Object> position = (HashMap<String, Object>) res.get("position");
             lat.add(Double.parseDouble(position.get("y").toString()));
             lon.add(Double.parseDouble(position.get("x").toString()));
-            users.add(res.get("name").toString() + "=" + res.get("address") + "=" + position.get("address_name").toString() + "=" + position.get("y").toString() + "=" + position.get("x").toString() );
+//            users.add(res.get("name").toString() + "=" + res.get("address") + "=" + position.get("address_name").toString() + "=" + position.get("y").toString() + "=" + position.get("x").toString() );
         }
 
         HashMap<String, Object> result = new HashMap<>();
         MidPoint midPoint = new MidPoint();
-
+        stopWatch.stop();
         // (1) 직선거리순 (2) 무게중심 (3) 교통점수순
         if(option == 1){
             result = midPoint.distance(lat, lon);
@@ -60,6 +61,7 @@ public class MapService {
             result = midPoint.centerOfGravity(lat, lon);
         }
         if (option == 3) { // 1km 이내에 있는 버스정류장 수
+            stopWatch.start("이동수단 갯수를 불러오기 위한 초기 설정");
             int optionValue = 1; // 똑같은 점수를 받은 좌표들이 여러개일 경우 좌표의 갯수 만큼 저장, 똑같은 점수를 받은 좌표들이 없을 경우 1(즉, 점수가 다 다를 경우)
             double lowScoreLat = 0, lowScoreLon = 0; // 점수가 낮은 좌표의 위도, 경도
             double sumLat = 0, sumLon = 0; // 낮은 점수 값이 같은 좌표들의 합
@@ -73,6 +75,9 @@ public class MapService {
             sumLat += lowScoreLat;
             sumLon += lowScoreLon;
 
+            stopWatch.stop();
+
+            stopWatch.start("사용자 주변에 이동수단(버스정류장, 역 등) 갯수 불러오기");
             int score = mapdao.busStopCount(comp); // 현재 젤 낮은 점수 변수
             int comp_score = 0; // 비교할 점수
 
@@ -98,11 +103,18 @@ public class MapService {
                     sumLon += comp.get("longitude");
                 }
             }
+            stopWatch.stop();
+
+            stopWatch.start("중간 지점 좌표 계산");
             if(optionValue == 1){
                 result = midPoint.vehiclesScore(lat, lon, lowScoreLat, lowScoreLon, optionValue);
             } else {
                 result = midPoint.vehiclesScore(lat, lon, sumLat, sumLon, optionValue);
             }
+            stopWatch.stop();
+
+            System.out.println(stopWatch.prettyPrint());
+            System.out.println("코드 실행 시간 : " + stopWatch.getTotalTimeSeconds() + " 초(s)");
         }
 
 //        // 쿠키를 저장하기 전 기존에 쿠키가 존재하면 삭제
