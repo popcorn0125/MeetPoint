@@ -71,8 +71,14 @@ public class MapService {
             List<HashMap<String, Object>> queryParams = new ArrayList<>();
             for(int i = 0; i < lat.size(); i++) {
                 HashMap<String, Object> latLon = new HashMap<>();
-                latLon.put("latitude", lat.get(i));
-                latLon.put("longitude", lon.get(i));
+                double userLat = Double.parseDouble(lat.get(i).toString());
+                double userLon = Double.parseDouble(lon.get(i).toString());
+                latLon.put("latitude", userLat);
+                latLon.put("longitude", userLon);
+                latLon.put("minLat", userLat - 0.00087513268667);
+                latLon.put("maxLat", userLat + 0.00087513268667);
+                latLon.put("minLon", userLon - 0.01071627787172);
+                latLon.put("maxLon", userLon + 0.01071627787172);
                 queryParams.add(latLon);
             }
             stopWatch.stop();
