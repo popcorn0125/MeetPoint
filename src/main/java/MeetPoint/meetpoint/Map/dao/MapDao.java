@@ -3,6 +3,7 @@ package MeetPoint.meetpoint.Map.dao;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 작성일 : 2024.04.06
@@ -16,7 +17,7 @@ public interface MapDao {
      * 작성자 : 김준식
      * 내용 : 버스 정류장 개수 조회
      **/
-    int busStopCount(HashMap<String, Double> params);
+    List<HashMap<String, Object>> busStopCount(List<HashMap<String, Object>> params);
 
     /**
      * 작성일 : 2024.05.06

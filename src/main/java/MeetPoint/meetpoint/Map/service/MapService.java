@@ -63,54 +63,47 @@ public class MapService {
         if (option == 3) { // 1km 이내에 있는 버스정류장 수
             stopWatch.start("이동수단 갯수를 불러오기 위한 초기 설정");
             int optionValue = 1; // 똑같은 점수를 받은 좌표들이 여러개일 경우 좌표의 갯수 만큼 저장, 똑같은 점수를 받은 좌표들이 없을 경우 1(즉, 점수가 다 다를 경우)
-            double lowScoreLat = 0, lowScoreLon = 0; // 점수가 낮은 좌표의 위도, 경도
-            double sumLat = 0, sumLon = 0; // 낮은 점수 값이 같은 좌표들의 합
+            double sumLat = 0.0, sumLon = 0.0; // 낮은 점수 값이 같은 좌표들의 합
+            double lowScoreLat = 0.0, lowScoreLon = 0.0;
+            int minScore = Integer.MAX_VALUE;
 
-            HashMap<String, Double> comp = new HashMap<>(); // 점수가 작은 좌표를 찾기 위한 변수
-            comp.put("latitude",lat.get(0));
-            comp.put("longitude", lon.get(0));
-
-            lowScoreLat = comp.get("latitude");
-            lowScoreLon = comp.get("longitude");
-            sumLat += lowScoreLat;
-            sumLon += lowScoreLon;
-
+            // Db에 한번에 보낼 파라미터를 리스트로 생성
+            List<HashMap<String, Object>> queryParams = new ArrayList<>();
+            for(int i = 0; i < lat.size(); i++) {
+                HashMap<String, Object> latLon = new HashMap<>();
+                latLon.put("latitude", lat.get(i));
+                latLon.put("longitude", lon.get(i));
+                queryParams.add(latLon);
+            }
             stopWatch.stop();
 
             stopWatch.start("사용자 주변에 이동수단(버스정류장, 역 등) 갯수 불러오기");
-            int score = mapdao.busStopCount(comp); // 현재 젤 낮은 점수 변수
-            int comp_score = 0; // 비교할 점수
+            // 각 사용자 위치의 이동수단 갯수 불러오기
+            List<HashMap<String, Object>> queryResult = mapdao.busStopCount(queryParams);
 
-            for(int i=1; i<lat.size();i++){
-                comp.replace("latitude",lat.get(i));
-                comp.replace("longitude",lon.get(i));
-                comp_score = mapdao.busStopCount(comp);
+            // 이동 수단 갯수가 낮은 좌표를 구하기 위한 계산
+            for(HashMap<String, Object> map : queryResult) {
+                int currentScore = Integer.parseInt(map.get("bus_stop_count").toString());
+                double currentLat = Double.parseDouble(map.get("user_lat").toString());
+                double currentLon = Double.parseDouble(map.get("user_lon").toString());
 
-                if(score > comp_score) {
+                if(currentScore < minScore) {
+                    minScore = currentScore;
+                    lowScoreLat = currentLat;
+                    lowScoreLon = currentLon;
+                    sumLat += currentLat;
+                    sumLon += currentLon;
                     optionValue = 1;
-                    sumLat = 0; sumLon = 0;
-                    score = comp_score;
-                    lowScoreLat = comp.get("latitude");
-                    lowScoreLon = comp.get("longitude");
-                    sumLat += lowScoreLat;
-                    sumLon += lowScoreLon;
-                    continue;
-                }
-
-                if(score == comp_score) {
-                    optionValue += 1;
-                    sumLat += comp.get("latitude");
-                    sumLon += comp.get("longitude");
+                } else if(currentScore == minScore) {
+                    sumLat += currentLat;
+                    sumLon += currentLon;
+                    optionValue++;
                 }
             }
             stopWatch.stop();
 
             stopWatch.start("중간 지점 좌표 계산");
-            if(optionValue == 1){
-                result = midPoint.vehiclesScore(lat, lon, lowScoreLat, lowScoreLon, optionValue);
-            } else {
-                result = midPoint.vehiclesScore(lat, lon, sumLat, sumLon, optionValue);
-            }
+            result = midPoint.vehiclesScore(lat, lon, lowScoreLat, lowScoreLon, optionValue);
             stopWatch.stop();
 
             System.out.println(stopWatch.prettyPrint());
