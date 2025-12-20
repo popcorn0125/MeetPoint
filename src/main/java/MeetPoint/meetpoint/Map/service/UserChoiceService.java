@@ -33,9 +33,9 @@ public class UserChoiceService {
         // 중간지점명, 중간지점 위도와 경도를 저장하고 해당 인덱스 값을 반환( 이유 : 사용자가 선택한 장소들을 저장하기위해 사용 )
         try{
             // 중간 좌표의 위도가 문자열로 저장되어 실수로 변환
-            params.put("mpLat", params.get("mpLat"));
+            params.put("mpLat", Double.parseDouble(params.get("mpLat").toString()));
             // 중간 좌표의 경도가 문자열로 저장되어 실수로 변환
-            params.put("mpLon", params.get("mpLon"));
+            params.put("mpLon", Double.parseDouble(params.get("mpLon").toString()));
             userChoiceDao.storeMP(params);
             // 저장한 인덱스 반환
             Long idx = (Long) params.get("id");
