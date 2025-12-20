@@ -103,6 +103,7 @@
 import axios from 'axios';
 import { reactive } from 'vue';
 import api from '@/url/baseURL';
+import api from '@/url/baseURL';
 
 export default {
     name: "ListPage",
@@ -540,7 +541,7 @@ export default {
         // DB에 조회할 인덱스 값을 통해 저장된 데이터 가져온 후 초기값 설정
         fetchPlaceData(index) {
 
-            axios({
+            api({
                 method: 'post',
                 url: "/choice/selectPlace",
                 data: { "index": index },
