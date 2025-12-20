@@ -103,7 +103,6 @@
 import axios from 'axios';
 import { reactive } from 'vue';
 import api from '@/url/baseURL';
-import api from '@/url/baseURL';
 
 export default {
     name: "ListPage",
