@@ -13,17 +13,41 @@
 	작성자 : 김준식
 	내용 : 버스 정류장 개수
     -->
-    <select id="busStopCount" parameterType="List" resultType="HashMap" >
+    <select id="busStopCount" parameterType="List" resultType="HashMap">
+        /* 1. 사용자들의 좌표 리스트를 하나의 임시 테이블(CTE)로 정의 */
+        WITH user_positions AS (
         <foreach collection="list" item="user" separator="UNION ALL">
             SELECT
-                #{user.latitude} as user_lat,
-                #{user.longitude} as user_Lon,
-                COUNT(*) as bus_stop_count
-            FROM transport.bus_stop
-            WHERE gps_lati BETWEEN #{user.minLat} AND #{user.maxLat}
-                AND gps_long BETWEEN #{user.minLon} AND #{user.maxLon}
+            #{user.latitude}::numeric as u_lat,
+            #{user.longitude}::numeric as u_lon,
+            #{user.minLat}::numeric as min_lat,
+            #{user.maxLat}::numeric as max_lat,
+            #{user.minLon}::numeric as min_lon,
+            #{user.maxLon}::numeric as max_lon
         </foreach>
+        )
+        /* 2. 사용자 테이블과 정류장 테이블을 인덱스 조건으로 JOIN */
+        SELECT
+        up.u_lat as user_lat,
+        up.u_lon as user_lon,
+        COUNT(bs.id) as bus_stop_count
+        FROM user_positions up
+        LEFT JOIN transport.bus_stop bs ON
+        bs.gps_lati BETWEEN up.min_lat AND up.max_lat
+        AND bs.gps_long BETWEEN up.min_lon AND up.max_lon
+        GROUP BY up.u_lat, up.u_lon
     </select>
+<!--    <select id="busStopCount" parameterType="List" resultType="HashMap" >-->
+<!--        <foreach collection="list" item="user" separator="UNION ALL">-->
+<!--            SELECT-->
+<!--                #{user.latitude} as user_lat,-->
+<!--                #{user.longitude} as user_Lon,-->
+<!--                COUNT(*) as bus_stop_count-->
+<!--            FROM transport.bus_stop-->
+<!--            WHERE gps_lati BETWEEN #{user.minLat} AND #{user.maxLat}-->
+<!--                AND gps_long BETWEEN #{user.minLon} AND #{user.maxLon}-->
+<!--        </foreach>-->
+<!--    </select>-->
 
     <!--
 	작성일 : 2024.05.06
